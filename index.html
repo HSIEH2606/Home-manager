@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>家管誌 · 家庭一站式管理</title>
+<style>
+  :root{
+    --paper:#FAF7EF;
+    --paper-deep:#F1EBDA;
+    --ink:#1F3A34;
+    --ink-soft:#4B615B;
+    --line:#E4DCC6;
+    --sage:#4C7A6C;
+    --sage-deep:#365A4F;
+    --sage-pale:#DCEBE3;
+    --coral:#E1552B;
+    --coral-pale:#FBE3D8;
+    --amber:#C98A20;
+    --amber-pale:#F6E7C9;
+    --white:#FFFFFF;
+    --shadow: 0 10px 30px -14px rgba(31,58,52,0.28);
+    --radius: 18px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper-deep);color:var(--ink);}
+  body{-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;}
+  h1,h2,h3{margin:0;font-weight:800;letter-spacing:.01em;}
+  p{margin:0;}
+  button{font-family:inherit;}
+  ::selection{background:var(--sage-pale);}
+
+  .app{max-width:1180px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--paper);display:flex;}
+  .sidebar{display:none;width:230px;flex-shrink:0;background:var(--sage-deep);color:#EAF3EE;padding:28px 18px;flex-direction:column;gap:6px;}
+  .sidebar .brand{display:flex;align-items:center;gap:10px;padding:0 10px 24px;color:#fff;}
+  .sidebar .brand .mark{width:34px;height:34px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .sidebar .brand span{font-size:19px;font-weight:800;}
+  .sidebar .greet{font-size:12.5px;color:#BFD8CC;padding:0 10px 18px;}
+  .side-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;color:#D8EAE1;text-decoration:none;font-size:14.5px;font-weight:600;cursor:pointer;border:none;background:transparent;text-align:left;width:100%;}
+  .side-link svg{width:19px;height:19px;flex-shrink:0;}
+  .side-link.active{background:rgba(255,255,255,0.14);color:#fff;}
+
+  .main-col{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .content{flex:1;padding-bottom:96px;}
+
+  .topbar{position:sticky;top:0;z-index:20;background:var(--paper);padding:18px 18px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid transparent;}
+  .topbar.with-line{border-color:var(--line);}
+  .icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);flex-shrink:0;}
+  .icon-btn svg{width:18px;height:18px;}
+  .topbar h1{font-size:19px;flex:1;}
+  .pill-btn{display:flex;align-items:center;gap:6px;background:var(--sage);color:#fff;border:none;border-radius:99px;padding:9px 15px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap;}
+  .pill-btn svg{width:14px;height:14px;}
+
+  .greeting{padding:2px 18px 18px;}
+  .greeting .hi{font-size:22px;}
+  .greeting .sub{color:var(--ink-soft);font-size:13.5px;margin-top:4px;}
+
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 18px 6px;}
+  .stat-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px;cursor:pointer;transition:transform .12s ease;}
+  .stat-card:active{transform:scale(.97);}
+  .stat-card .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .stat-card .icon-wrap{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+  .stat-card .icon-wrap svg{width:18px;height:18px;}
+  .stat-card .num{font-size:26px;font-weight:800;line-height:1;}
+  .stat-card .label{font-size:12.5px;color:var(--ink-soft);margin-top:6px;}
+  .stat-card .flag{font-size:11.5px;font-weight:700;margin-top:8px;display:inline-block;padding:2px 8px;border-radius:99px;}
+
+  .section-head{display:flex;align-items:center;justify-content:space-between;padding:22px 18px 10px;}
+  .section-head h2{font-size:15.5px;}
+  .link-btn{background:none;border:none;color:var(--sage-deep);font-size:13px;font-weight:700;cursor:pointer;}
+
+  .task-list{padding:0 18px;display:flex;flex-direction:column;gap:8px;}
+  .task-row{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:11px 13px;cursor:pointer;}
+  .task-row .dot{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .task-row .dot svg{width:16px;height:16px;}
+  .task-row .body{flex:1;min-width:0;}
+  .task-row .name{font-size:14px;font-weight:700;}
+  .task-row .desc{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .task-row .tag{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+
+  .activity-row{display:flex;align-items:center;gap:12px;padding:11px 13px;}
+  .activity-row .ic{width:30px;height:30px;border-radius:8px;background:var(--sage-pale);color:var(--sage-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .activity-row .txt{flex:1;font-size:13px;}
+  .activity-row .date{font-size:11.5px;color:var(--ink-soft);}
+
+  .search-wrap{padding:0 18px 12px;display:flex;gap:10px;}
+  .search-box{flex:1;display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line);border-radius:13px;padding:10px 13px;}
+  .search-box svg{width:16px;height:16px;color:var(--ink-soft);flex-shrink:0;}
+  .search-box input{border:none;outline:none;background:transparent;font-size:14px;width:100%;color:var(--ink);font-family:inherit;}
+
+  .chip-row{display:flex;gap:8px;padding:0 18px 14px;overflow-x:auto;}
+  .chip{flex-shrink:0;padding:8px 14px;border-radius:99px;border:1px solid var(--line);background:var(--white);font-size:13px;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .card-list{padding:0 18px;display:flex;flex-direction:column;gap:10px;}
+  .item-card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:13px;display:flex;gap:12px;cursor:pointer;}
+  .item-card .emoji{width:50px;height:50px;border-radius:13px;background:var(--paper-deep);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+  .item-card .info{flex:1;min-width:0;}
+  .item-card .row1{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+  .item-card .name{font-size:15px;font-weight:700;}
+  .item-card .qty{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .tag-pill{font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;white-space:nowrap;}
+  .bar-track{height:6px;border-radius:99px;background:var(--paper-deep);margin-top:9px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:99px;}
+  .item-card .foot{display:flex;justify-content:space-between;margin-top:6px;font-size:11.5px;color:var(--ink-soft);}
+
+  .empty{padding:40px 18px;text-align:center;color:var(--ink-soft);font-size:13.5px;}
+
+  .subtabs{display:flex;gap:6px;padding:0 18px 14px;}
+  .subtab{flex:1;text-align:center;padding:10px 6px;border-radius:12px;border:1px solid var(--line);background:var(--white);font-size:13px;font-weight:700;color:var(--ink-soft);cursor:pointer;}
+  .subtab.active{background:var(--sage);color:#fff;border-color:var(--sage);}
+
+  .appliance-card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;}
+  .appliance-card .emoji{width:48px;height:48px;border-radius:12px;background:var(--sage-pale);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .appliance-card .info{flex:1;min-width:0;}
+  .appliance-card .name{font-size:14.5px;font-weight:700;}
+  .appliance-card .model{font-size:12px;color:var(--ink-soft);margin-top:1px;}
+  .appliance-card .date{font-size:11.5px;color:var(--ink-soft);margin-top:5px;}
+
+  .repair-entry{display:flex;gap:10px;padding:13px;background:var(--white);border:1px solid var(--line);border-radius:16px;cursor:pointer;}
+  .repair-entry .rail{display:flex;flex-direction:column;align-items:center;padding-top:3px;}
+  .repair-entry .rail .node{width:9px;height:9px;border-radius:50%;background:var(--sage);flex-shrink:0;}
+  .repair-entry.pending .rail .node{background:var(--coral);}
+  .repair-entry .body{flex:1;padding-bottom:2px;}
+  .repair-entry .date{font-size:12px;color:var(--ink-soft);font-weight:700;}
+  .repair-entry .title{font-size:14px;font-weight:700;margin-top:3px;}
+  .repair-entry .meta{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .del-x{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);cursor:pointer;flex-shrink:0;}
+  .del-x svg{width:15px;height:15px;}
+
+  .consumable-card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;cursor:pointer;}
+  .consumable-card .name{font-size:14.5px;font-weight:700;}
+  .consumable-card .meta{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+  .consumable-card .meta2{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+
+  .shop-row{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--line);border-radius:15px;padding:12px 13px;}
+  .checkbox{width:23px;height:23px;border-radius:8px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .checkbox.checked{background:var(--sage);border-color:var(--sage);color:#fff;}
+  .checkbox svg{width:13px;height:13px;}
+  .shop-row .emoji{width:38px;height:38px;border-radius:10px;background:var(--paper-deep);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+  .shop-row .info{flex:1;}
+  .shop-row .name{font-size:14px;font-weight:700;}
+  .shop-row.checked .name{text-decoration:line-through;color:var(--ink-soft);}
+  .shop-row .cat{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .shop-row .qty{font-size:12.5px;color:var(--ink-soft);}
+  .shop-row .more-x{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);cursor:pointer;flex-shrink:0;}
+  .shop-row .more-x svg{width:16px;height:16px;}
+
+  .cart-bar{position:fixed;left:0;right:0;bottom:76px;z-index:15;display:flex;justify-content:center;pointer-events:none;}
+  .cart-bar .inner{max-width:1180px;width:100%;padding:0 18px;pointer-events:none;}
+  .cart-bar button{pointer-events:auto;width:100%;background:var(--sage-deep);color:#fff;border:none;border-radius:14px;padding:14px;font-size:14.5px;font-weight:800;box-shadow:var(--shadow);cursor:pointer;}
+
+  .sheet-overlay{position:fixed;inset:0;background:rgba(31,26,20,0.42);z-index:50;display:none;align-items:flex-end;justify-content:center;}
+  .sheet-overlay.open{display:flex;}
+  .sheet{background:var(--paper);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;border-radius:24px 24px 0 0;padding-bottom:24px;animation:sheetUp .22s ease;}
+  @keyframes sheetUp{from{transform:translateY(24px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .sheet-head{display:flex;align-items:center;gap:10px;padding:16px 16px 6px;}
+  .sheet-head h2{flex:1;font-size:17px;}
+  .sheet-head .actions{display:flex;gap:8px;}
+  .sheet-hero{display:flex;gap:14px;padding:10px 18px 14px;align-items:center;}
+  .sheet-hero .emoji{width:70px;height:70px;border-radius:18px;background:var(--paper-deep);display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0;}
+  .sheet-hero .name{font-size:19px;font-weight:800;}
+  .sheet-hero .min{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
+  .sheet-hero .bar-track{margin-top:8px;width:100%;}
+
+  .sheet-tabs{display:flex;gap:6px;padding:0 18px 14px;}
+  .sheet-tab{flex:1;text-align:center;padding:9px 4px;border-radius:11px;border:1px solid var(--line);background:var(--white);font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer;white-space:nowrap;}
+  .sheet-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .detail-list{background:var(--white);border:1px solid var(--line);border-radius:16px;margin:0 18px 16px;overflow:hidden;}
+  .detail-row{display:flex;justify-content:space-between;padding:12px 15px;font-size:13.5px;border-bottom:1px solid var(--line);gap:10px;}
+  .detail-row:last-child{border-bottom:none;}
+  .detail-row .k{color:var(--ink-soft);flex-shrink:0;}
+  .detail-row .v{font-weight:700;text-align:right;}
+
+  .stepper{display:flex;align-items:center;justify-content:center;gap:22px;padding:6px 18px 16px;}
+  .stepper button{width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--white);font-size:20px;font-weight:800;cursor:pointer;color:var(--sage-deep);}
+  .stepper .val{font-size:22px;font-weight:800;min-width:40px;text-align:center;}
+  .sheet-actions{display:flex;gap:10px;padding:0 18px;}
+  .sheet-actions button{flex:1;padding:13px;border-radius:13px;border:1px solid var(--line);background:var(--white);font-weight:700;font-size:13.5px;cursor:pointer;color:var(--ink);}
+
+  .form-row{padding:0 18px 12px;}
+  .form-row label{font-size:12.5px;font-weight:700;color:var(--ink-soft);display:block;margin-bottom:6px;}
+  .form-row input,.form-row select{width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:var(--white);font-size:14px;font-family:inherit;color:var(--ink);outline:none;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 12px;}
+  .form-grid .form-row{padding:0;}
+  .toggle{width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;}
+  .toggle.on{background:var(--sage);}
+  .toggle .knob{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s ease;}
+  .toggle.on .knob{left:20px;}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;font-size:13.5px;font-weight:700;}
+
+  .chart-wrap{display:flex;align-items:flex-end;gap:10px;height:110px;padding:16px 6px 6px;margin:0 18px;}
+  .chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+  .chart-bar{width:100%;border-radius:6px 6px 0 0;background:var(--sage);min-height:4px;}
+  .chart-label{font-size:11px;color:var(--ink-soft);}
+  .chart-val{font-size:11px;font-weight:700;color:var(--ink);}
+
+  .log-row{display:flex;justify-content:space-between;align-items:center;padding:12px 15px;border-bottom:1px solid var(--line);gap:10px;}
+  .log-row:last-child{border-bottom:none;}
+  .log-row .l-main{font-size:13.5px;font-weight:700;}
+  .log-row .l-sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
+  .log-row .l-right{text-align:right;font-size:13px;font-weight:700;flex-shrink:0;}
+
+  .more-list{padding:6px 18px;display:flex;flex-direction:column;gap:8px;}
+  .more-row{display:flex;align-items:center;gap:13px;background:var(--white);border:1px solid var(--line);border-radius:15px;padding:14px;cursor:pointer;}
+  .more-row .ic{width:38px;height:38px;border-radius:11px;background:var(--sage-pale);color:var(--sage-deep);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .more-row .ic svg{width:19px;height:19px;}
+  .more-row .t{font-size:14.5px;font-weight:700;flex:1;}
+  .more-row svg.chev{width:16px;height:16px;color:var(--ink-soft);}
+
+  .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(250,247,239,0.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);}
+  .bottom-nav .inner{max-width:1180px;width:100%;display:flex;}
+  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;background:none;border:none;cursor:pointer;color:var(--ink-soft);}
+  .nav-btn svg{width:21px;height:21px;}
+  .nav-btn span{font-size:10.5px;font-weight:700;}
+  .nav-btn.active{color:var(--sage-deep);}
+
+  @media (min-width:900px){
+    .sidebar{display:flex;}
+    .bottom-nav{display:none;}
+    .content{padding-bottom:40px;}
+    .cart-bar{bottom:24px;}
+    .app{border-left:1px solid var(--line);border-right:1px solid var(--line);}
+  }
+  @media (max-width:899px){ .sidebar{display:none;} }
+
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:99px;font-size:13px;font-weight:700;z-index:80;opacity:0;pointer-events:none;transition:opacity .2s ease, bottom .2s ease;white-space:nowrap;}
+  .toast.show{opacity:1;bottom:110px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="sidebar">
+    <div class="brand"><div class="mark">🏡</div><span>家管誌</span></div>
+    <div class="greet">簡潔易用．重點提醒．快速操作</div>
+    <button class="side-link" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>首頁</button>
+    <button class="side-link" data-nav="inventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.5 12.5a1 1 0 0 1-1 .9H6.5a1 1 0 0 1-1-.9L4 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>庫存清單</button>
+    <button class="side-link" data-nav="shopping"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 3h3l1 3"/></svg>採購清單</button>
+    <button class="side-link" data-nav="appliances"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8"/><circle cx="8" cy="15.5" r="1"/></svg>家電管理</button>
+    <div style="height:8px"></div>
+    <div style="font-size:11px;color:#BFD8CC;padding:6px 12px 2px;font-weight:700;">更多</div>
+    <button class="side-link" data-nav="repairs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3l7 7-8.5 8.5-4-4L17 5z"/><path d="M5 21l3-3"/></svg>維修紀錄</button>
+    <button class="side-link" data-nav="consumables"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>耗材更換</button>
+  </nav>
+  <div class="main-col"><div class="content" id="content"></div></div>
+</div>
+
+<div class="sheet-overlay" id="itemSheetOverlay"><div class="sheet" id="itemSheet"></div></div>
+<div class="sheet-overlay" id="applSheetOverlay"><div class="sheet" id="applSheet"></div></div>
+<div class="sheet-overlay" id="consSheetOverlay"><div class="sheet" id="consSheet"></div></div>
+<div class="sheet-overlay" id="formSheetOverlay"><div class="sheet" id="formSheet"></div></div>
+<div class="sheet-overlay" id="moreSheetOverlay"><div class="sheet" id="moreSheet"></div></div>
+
+<div class="toast" id="toast"></div>
+
+<nav class="bottom-nav"><div class="inner">
+  <button class="nav-btn" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>首頁</span></button>
+  <button class="nav-btn" data-nav="inventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.5 12.5a1 1 0 0 1-1 .9H6.5a1 1 0 0 1-1-.9L4 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><span>庫存</span></button>
+  <button class="nav-btn" data-nav="shopping"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 3h3l1 3"/></svg><span>採購清單</span></button>
+  <button class="nav-btn" data-nav="appliances"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8"/><circle cx="8" cy="15.5" r="1"/></svg><span>家電</span></button>
+  <button class="nav-btn" data-nav="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>更多</span></button>
+</div></nav>
+
+<script>
+(function(){
+  "use strict";
+
+  var ICONS = {
+    box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.5 12.5a1 1 0 0 1-1 .9H6.5a1 1 0 0 1-1-.9L4 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>',
+    bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 10a6 6 0 1 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 14 6 10z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>',
+    back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>',
+    plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>',
+    search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+    wrench:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3l7 7-8.5 8.5-4-4L17 5z"/><path d="M5 21l3-3"/></svg>',
+    clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    tv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8"/><circle cx="8" cy="15.5" r="1"/></svg>',
+    cart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 3h3l1 3"/></svg>',
+    check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5 11-11"/></svg>',
+    chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>',
+    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+    trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></svg>',
+    x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+  };
+
+  var TODAY = new Date(2026,7,23);
+  function daysUntil(dateStr){ if(!dateStr) return null; return Math.round((new Date(dateStr+"T00:00:00")-TODAY)/86400000); }
+  function daysSince(dateStr){ if(!dateStr) return null; return Math.round((TODAY-new Date(dateStr+"T00:00:00"))/86400000); }
+  function fmtDate(dateStr){ return dateStr ? dateStr.replace(/-/g,"/") : "—"; }
+  function money(n){ return "$"+(n||0).toLocaleString(); }
+  function addMonths(dateStr, months){
+    var d = new Date(dateStr+"T00:00:00");
+    d.setMonth(d.getMonth()+months);
+    return d.toISOString().slice(0,10);
+  }
+
+  function defaultState(){
+    return {
+      fridge: [
+        {id:"f1", name:"雞蛋", emoji:"🥚", qty:2, unit:"顆", min:4, location:"冰箱冷藏室", brand:"大成", spec:"1盒10顆", expiry:"2026-08-25", lastPurchase:"2026-08-15", price:60, channel:"全聯", note:"",
+          trend:{labels:["4月","5月","6月","7月","8月"],values:[38,35,40,42,30]},
+          usageLog:[{date:"2026-08-21",delta:-2,note:"煎蛋"},{date:"2026-08-19",delta:-1,note:""},{date:"2026-08-18",delta:-2,note:"做蛋糕"},{date:"2026-08-16",delta:-1,note:""},{date:"2026-08-15",delta:-1,note:""}],
+          purchaseLog:[{date:"2026-08-15",qty:"1盒(10顆)",price:60,channel:"全聯"},{date:"2026-08-01",qty:"1盒(10顆)",price:58,channel:"家樂福"},{date:"2026-07-15",qty:"1盒(10顆)",price:59,channel:"全聯"},{date:"2026-07-01",qty:"1盒(10顆)",price:55,channel:"家樂福"}]},
+        {id:"f2", name:"鮮奶", emoji:"🥛", qty:1, unit:"瓶", min:2, location:"冰箱冷藏室", brand:"統一", spec:"936ml", expiry:"2026-08-25", lastPurchase:"2026-08-10", price:99, channel:"全聯", note:"",
+          trend:{labels:["4月","5月","6月","7月","8月"],values:[8,9,7,8,6]},
+          usageLog:[{date:"2026-08-20",delta:-1,note:""},{date:"2026-08-15",delta:-1,note:""}],
+          purchaseLog:[{date:"2026-08-10",qty:"1瓶",price:99,channel:"全聯"},{date:"2026-07-25",qty:"1瓶",price:99,channel:"全聯"}]},
+        {id:"f3", name:"高麗菜", emoji:"🥬", qty:1, unit:"顆", min:2, location:"冰箱冷藏室", brand:"", spec:"", expiry:"2026-08-27", lastPurchase:"2026-08-13", price:45, channel:"傳統市場", note:"",
+          trend:{labels:["4月","5月","6月","7月","8月"],values:[3,4,3,4,2]},
+          usageLog:[{date:"2026-08-18",delta:-1,note:"炒高麗菜"}],
+          purchaseLog:[{date:"2026-08-13",qty:"1顆",price:45,channel:"傳統市場"}]},
+        {id:"f4", name:"牛番茄", emoji:"🍅", qty:3, unit:"顆", min:5, location:"冰箱冷藏室", brand:"", spec:"", expiry:"2026-08-29", lastPurchase:"2026-08-16", price:69, channel:"全聯", note:"",
+          trend:{labels:["4月","5月","6月","7月","8月"],values:[10,12,9,11,7]},
+          usageLog:[{date:"2026-08-19",delta:-2,note:""}],
+          purchaseLog:[{date:"2026-08-16",qty:"5顆",price:69,channel:"全聯"}]},
+        {id:"f5", name:"豬肉片", emoji:"🥩", qty:200, unit:"g", min:500, location:"冰箱冷凍室", brand:"", spec:"", expiry:"2026-08-22", lastPurchase:"2026-08-12", price:120, channel:"全聯", note:"",
+          trend:{labels:["4月","5月","6月","7月","8月"],values:[1200,1400,1300,1500,900]},
+          usageLog:[{date:"2026-08-17",delta:-300,note:"火鍋"}],
+          purchaseLog:[{date:"2026-08-12",qty:"500g",price:120,channel:"全聯"}]}
+      ],
+      daily: [
+        {id:"d1", name:"衛生紙", emoji:"🧻", qty:1, unit:"包", min:3, location:"儲藏室", brand:"得意", spec:"110抽/包", expiry:null, lastPurchase:"2026-08-20", price:129, channel:"全聯", note:"",
+          trend:{labels:["3月","4月","5月","6月","7月"],values:[6,5,6,6,4]},
+          usageLog:[{date:"2026-08-21",delta:-1,note:""},{date:"2026-08-16",delta:-1,note:""},{date:"2026-08-11",delta:-1,note:""}],
+          purchaseLog:[{date:"2026-08-20",qty:"3包",price:129,channel:"全聯"}]},
+        {id:"d2", name:"洗衣精", emoji:"🧴", qty:1, unit:"瓶", min:2, location:"陽台", brand:"", spec:"", expiry:null, lastPurchase:"2026-07-28", price:229, channel:"家樂福", note:"",
+          trend:{labels:["4月","5月","6月","7月","8月"],values:[1,1,2,1,1]},
+          usageLog:[], purchaseLog:[{date:"2026-07-28",qty:"1瓶",price:229,channel:"家樂福"}]},
+        {id:"d3", name:"垃圾袋", emoji:"🗑️", qty:1, unit:"包", min:2, location:"廚房", brand:"", spec:"20個/包", expiry:null, lastPurchase:"2026-08-05", price:59, channel:"全聯", note:"",
+          trend:{labels:["4月","5月","6月","7月","8月"],values:[3,3,4,3,2]},
+          usageLog:[], purchaseLog:[{date:"2026-08-05",qty:"1包",price:59,channel:"全聯"}]}
+      ],
+      appliances: [
+        {id:"a1", name:"Panasonic 冰箱", model:"NR-BX461", emoji:"🧊", status:"保固內", purchaseDate:"2022-08-15", price:32900, warrantyUntil:"2027-08-15", channel:"全聯家電", serial:"PN-BX461-2208", note:""},
+        {id:"a2", name:"LG 洗衣機", model:"WT-VD123", emoji:"🌀", status:"待維修", purchaseDate:"2024-02-10", price:26900, warrantyUntil:"2026-02-10", channel:"LG官方商城", serial:"12345ABC6789", note:""},
+        {id:"a3", name:"日立冷氣", model:"RAS-50YK", emoji:"❄️", status:"保固內", purchaseDate:"2022-06-20", price:45900, warrantyUntil:"2027-06-20", channel:"燦坤3C", serial:"HT-RAS50-2206", note:""},
+        {id:"a4", name:"Samsung 電視", model:"QA65Q80A", emoji:"📺", status:"保固內", purchaseDate:"2023-05-05", price:39900, warrantyUntil:"2027-05-05", channel:"好市多", serial:"SS-QA65-2305", note:""}
+      ],
+      repairs: [
+        {id:"r1", applianceId:"a2", date:"2026-08-21", title:"無法脫水", status:"處理中", amount:2000, vendor:"等待維修報價", note:""},
+        {id:"r2", applianceId:"a2", date:"2026-06-15", title:"更換排水馬達", status:"完成", amount:1800, vendor:"大同維修中心", note:""},
+        {id:"r3", applianceId:"a2", date:"2025-12-10", title:"更換進水閥", status:"完成", amount:1200, vendor:"大同維修中心", note:""}
+      ],
+      consumables: [
+        {id:"c1", applianceId:"a1", name:"冰箱濾芯", cycleMonths:6, lastReplaced:"2026-05-20", nextDate:"2026-11-20", reminderDays:7, reminderEnabled:true, note:"建議每半年更換一次，保持水質最佳狀態"},
+        {id:"c2", applianceId:"a3", name:"空氣清淨機濾網", cycleMonths:6, lastReplaced:"2026-02-25", nextDate:"2026-08-28", reminderDays:7, reminderEnabled:true, note:""},
+        {id:"c3", applianceId:"a3", name:"冷氣濾網", cycleMonths:3, lastReplaced:"2026-06-18", nextDate:"2026-09-18", reminderDays:7, reminderEnabled:true, note:""},
+        {id:"c4", applianceId:"a2", name:"洗衣機濾網", cycleMonths:2, lastReplaced:"2026-08-05", nextDate:"2026-10-05", reminderDays:7, reminderEnabled:false, note:""}
+      ],
+      shopping: [
+        {id:"s1", name:"衛生紙", emoji:"🧻", qty:"2串", cat:"日用品", checked:true},
+        {id:"s2", name:"洗衣精", emoji:"🧴", qty:"1瓶", cat:"日用品", checked:true},
+        {id:"s3", name:"雞蛋", emoji:"🥚", qty:"1盒", cat:"超市", checked:false},
+        {id:"s4", name:"牛奶", emoji:"🥛", qty:"2瓶", cat:"超市", checked:false},
+        {id:"s5", name:"垃圾袋", emoji:"🗑️", qty:"1包", cat:"日用品", checked:false},
+        {id:"s6", name:"泡麵", emoji:"🍜", qty:"2包", cat:"Costco", checked:false}
+      ],
+      activity: [{id:"act1", text:"買入衛生紙 2 串", date:"08/20"}]
+    };
+  }
+
+  var state = defaultState();
+  var uid = function(p){ return p + Math.random().toString(36).slice(2,8); };
+
+  function saveState(){
+    try{ if(window.storage && window.storage.set){ window.storage.set("family-home-state-v2", JSON.stringify(state), false).catch(function(){}); } }catch(e){}
+  }
+  function loadState(cb){
+    try{
+      if(window.storage && window.storage.get){
+        window.storage.get("family-home-state-v2", false).then(function(res){
+          if(res && res.value){ try{ var p = JSON.parse(res.value); if(p && p.fridge) state = p; }catch(e){} }
+          cb();
+        }).catch(function(){ cb(); });
+        return;
+      }
+    }catch(e){}
+    cb();
+  }
+
+  function statusOf(item){
+    var pct = Math.round((item.qty / item.min) * 100);
+    var d = daysUntil(item.expiry);
+    var expiring = (d !== null && d <= 3);
+    var low = item.qty <= item.min;
+    var kind = low ? "low" : (expiring ? "soon" : "ok");
+    return {pct: Math.min(pct,100), low: low, expiring: expiring, kind: kind, days: d};
+  }
+  function barColor(kind){ return kind==="low" ? "var(--coral)" : (kind==="soon" ? "var(--amber)" : "var(--sage)"); }
+  function tagFor(kind, days){
+    if(kind === "low") return {text:"低庫存", bg:"var(--coral-pale)", fg:"var(--coral)"};
+    if(kind === "soon") return {text: days<=0 ? "已到期" : "即將到期", bg:"var(--amber-pale)", fg:"var(--amber)"};
+    return null;
+  }
+  function allInventory(){ return state.fridge.concat(state.daily); }
+  function findItem(id){ return allInventory().find(function(i){return i.id===id;}); }
+  function findAppliance(id){ return state.appliances.find(function(a){return a.id===id;}); }
+  function findConsumable(id){ return state.consumables.find(function(c){return c.id===id;}); }
+  function repairsFor(applId){ return state.repairs.filter(function(r){return r.applianceId===applId;}); }
+  function consumablesFor(applId){ return state.consumables.filter(function(c){return c.applianceId===applId;}); }
+
+  function showToast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg; t.classList.add("show");
+    setTimeout(function(){ t.classList.remove("show"); }, 1800);
+  }
+
+  var route = {name:"home"};
+  var invTab = "fridge", invFilter = "all";
+  var applianceTab = "list", selectedApplianceForRepairs = null;
+  var itemDetailTab = "info", currentItemId = null;
+  var applDetailTab = "info", currentApplId = null;
+
+  function nav(name){
+    route = {name:name};
+    document.querySelectorAll(".nav-btn, .side-link").forEach(function(b){ b.classList.toggle("active", b.dataset.nav === name); });
+    render();
+    document.getElementById("content").scrollTop = 0; window.scrollTo(0,0);
+  }
+  document.querySelectorAll("[data-nav]").forEach(function(el){
+    el.addEventListener("click", function(){
+      var target = el.dataset.nav;
+      if(target === "more"){ openMoreSheet(); return; }
+      nav(target);
+    });
+  });
+
+  var content = document.getElementById("content");
+  function render(){
+    if(route.name === "home") return renderHome();
+    if(route.name === "inventory") return renderInventory();
+    if(route.name === "shopping") return renderShopping();
+    if(route.name === "appliances") return renderAppliances();
+    if(route.name === "repairs"){ applianceTab="repairs"; return renderAppliances(); }
+    if(route.name === "consumables"){ applianceTab="consumables"; return renderAppliances(); }
+  }
+
+  /* ---------- Home ---------- */
+  function renderHome(){
+    var lowFridge = state.fridge.filter(function(i){return statusOf(i).low;}).length;
+    var lowDaily = state.daily.filter(function(i){return statusOf(i).low;}).length;
+    var upcomingConsumables = state.consumables.filter(function(c){var d=daysUntil(c.nextDate);return d!==null&&d<=14;}).length;
+    var pendingRepairs = state.repairs.filter(function(r){return r.status==="處理中";}).length;
+    var attentionCount = lowFridge + lowDaily + upcomingConsumables + pendingRepairs;
+
+    var needsAttention = [];
+    state.fridge.concat(state.daily).forEach(function(i){
+      var s = statusOf(i);
+      if(s.low || s.expiring){
+        needsAttention.push({icon:ICONS.box, bg:"var(--sage-pale)", fg:"var(--sage-deep)", name:i.name,
+          desc: s.low ? "剩 "+i.qty+" "+i.unit : "到期日 "+fmtDate(i.expiry).slice(5),
+          tag: s.low?"需要補貨":"即將到期", tagBg: s.low?"var(--coral-pale)":"var(--amber-pale)", tagFg: s.low?"var(--coral)":"var(--amber)",
+          onClick:function(){ openItemSheet(i.id); }});
+      }
+    });
+    state.consumables.forEach(function(c){
+      var d = daysUntil(c.nextDate);
+      if(d!==null && d<=14){
+        needsAttention.push({icon:ICONS.clock, bg:"var(--amber-pale)", fg:"var(--amber)", name:c.name,
+          desc: d<=0?"已超過建議更換時間":"上次建議每 "+c.cycleMonths+" 個月更換",
+          tag: d<=0?"已到期":(d+" 天內到期"), tagBg:"var(--amber-pale)", tagFg:"var(--amber)",
+          onClick:function(){ openConsSheet(c.id); }});
+      }
+    });
+    state.repairs.filter(function(r){return r.status==="處理中";}).forEach(function(r){
+      var app = findAppliance(r.applianceId);
+      needsAttention.push({icon:ICONS.wrench, bg:"var(--coral-pale)", fg:"var(--coral)", name:(app?app.name:"")+" · "+r.title,
+        desc:"預估費用 "+money(r.amount), tag:"處理中", tagBg:"var(--coral-pale)", tagFg:"var(--coral)",
+        onClick:function(){ if(app) openApplSheet(app.id, "repairs"); }});
+    });
+
+    var html = '<div class="topbar"><h1>我的家</h1><button class="icon-btn">'+ICONS.bell+'</button></div>';
+    html += '<div class="greeting"><div class="hi">早安 👋</div><div class="sub">今天有 <b style="color:var(--coral)">'+attentionCount+'</b> 件事情需要注意喔！</div></div>';
+    html += '<div class="stat-grid">';
+    html += statCard(ICONS.box,"var(--sage-pale)","var(--sage-deep)",state.fridge.length,"冰箱庫存", lowFridge?lowFridge+" 項低庫存":null, "inventory","fridge");
+    html += statCard(ICONS.box,"var(--sage-pale)","var(--sage-deep)",state.daily.length,"日用品庫存", lowDaily?lowDaily+" 項低庫存":null, "inventory","daily");
+    html += statCard(ICONS.clock,"var(--amber-pale)","var(--amber)",state.consumables.length,"待更換耗材", upcomingConsumables?upcomingConsumables+" 項將到期":null, "consumables",null);
+    html += statCard(ICONS.wrench,"var(--coral-pale)","var(--coral)",state.appliances.length,"家電總數", pendingRepairs?pendingRepairs+" 件待維修":null, "appliances",null);
+    html += '</div>';
+    html += '<div class="section-head"><h2>最近需要處理</h2></div><div class="task-list">';
+    if(needsAttention.length===0){ html += '<div class="empty">目前沒有需要特別注意的事項，太棒了！</div>'; }
+    else { needsAttention.slice(0,6).forEach(function(t,idx){
+      html += '<div class="task-row" data-attn="'+idx+'"><div class="dot" style="background:'+t.bg+';color:'+t.fg+'">'+t.icon+'</div>'
+        + '<div class="body"><div class="name">'+t.name+'</div><div class="desc">'+t.desc+'</div></div>'
+        + '<div class="tag" style="background:'+t.tagBg+';color:'+t.tagFg+'">'+t.tag+'</div></div>';
+    }); }
+    html += '</div>';
+    html += '<div class="section-head"><h2>最近活動</h2></div><div class="card-list" style="gap:2px;">';
+    if(state.activity.length===0){ html += '<div class="empty">尚無活動紀錄</div>'; }
+    else { state.activity.slice(0,5).forEach(function(a){ html += '<div class="activity-row"><div class="ic">🛒</div><div class="txt">'+a.text+'</div><div class="date">'+a.date+'</div></div>'; }); }
+    html += '</div><div style="height:8px"></div>';
+    content.innerHTML = html;
+
+    window.__attnList = needsAttention;
+    content.querySelectorAll("[data-attn]").forEach(function(el){ el.addEventListener("click", function(){ window.__attnList[+el.dataset.attn].onClick(); }); });
+    content.querySelectorAll("[data-goto]").forEach(function(el){
+      el.addEventListener("click", function(){ if(el.dataset.tab) invTab = el.dataset.tab; nav(el.dataset.goto); });
+    });
+  }
+  function statCard(icon,bg,fg,num,label,flag,gotoName,tab){
+    return '<div class="stat-card" data-goto="'+gotoName+'" '+(tab?'data-tab="'+tab+'"':'')+'>'
+      + '<div class="top"><div class="icon-wrap" style="background:'+bg+';color:'+fg+'">'+icon+'</div></div>'
+      + '<div class="num">'+num+'</div><div class="label">'+label+'</div>'
+      + (flag?'<div class="flag" style="background:var(--coral-pale);color:var(--coral)">'+flag+'</div>':'') + '</div>';
+  }
+
+  /* ---------- Inventory list ---------- */
+  function renderInventory(){
+    var list = invTab === "fridge" ? state.fridge : state.daily;
+    var lowCount = list.filter(function(i){return statusOf(i).low;}).length;
+    var soonCount = list.filter(function(i){return statusOf(i).expiring;}).length;
+    var filtered = list.filter(function(i){ var s=statusOf(i); if(invFilter==="low") return s.low; if(invFilter==="soon") return s.expiring; return true; });
+
+    var html = '<div class="topbar with-line"><h1>庫存清單</h1><button class="pill-btn" id="addItemBtn">'+ICONS.plus+' 新增</button></div>';
+    html += '<div class="subtabs" style="padding-top:14px;">' + subtabBtn("fridge","🧊 冰箱庫存",invTab) + subtabBtn("daily","🧻 日用品庫存",invTab) + '</div>';
+    html += '<div class="search-wrap"><div class="search-box">'+ICONS.search+'<input placeholder="搜尋商品" id="invSearch"></div></div>';
+    html += '<div class="chip-row">' + chip("all","全部 ("+list.length+")",invFilter) + chip("low","低庫存 ("+lowCount+")",invFilter) + chip("soon","即將到期 ("+soonCount+")",invFilter) + '</div>';
+    html += '<div class="card-list" id="invCardList">';
+    html += filtered.length ? filtered.map(itemCardHtml).join("") : '<div class="empty">沒有符合條件的品項</div>';
+    html += '</div><div style="height:8px"></div>';
+    content.innerHTML = html;
+
+    document.getElementById("addItemBtn").addEventListener("click", function(){ openItemForm(null, invTab); });
+    content.querySelectorAll("[data-subtab]").forEach(function(el){ el.addEventListener("click", function(){ invTab=el.dataset.subtab; invFilter="all"; renderInventory(); }); });
+    content.querySelectorAll("[data-chip]").forEach(function(el){ el.addEventListener("click", function(){ invFilter=el.dataset.chip; renderInventory(); }); });
+    bindItemCards();
+    var searchInput = document.getElementById("invSearch");
+    searchInput.addEventListener("input", function(){
+      var q = searchInput.value.trim();
+      var subset = filtered.filter(function(i){ return i.name.indexOf(q)!==-1; });
+      var cardList = document.getElementById("invCardList");
+      cardList.innerHTML = subset.length ? subset.map(itemCardHtml).join("") : '<div class="empty">找不到符合的商品</div>';
+      bindItemCards();
+    });
+  }
+  function subtabBtn(val,label,current){ return '<div class="subtab '+(val===current?'active':'')+'" data-subtab="'+val+'">'+label+'</div>'; }
+  function chip(val,label,current){ return '<div class="chip '+(val===current?'active':'')+'" data-chip="'+val+'">'+label+'</div>'; }
+  function itemCardHtml(i){
+    var s = statusOf(i); var tag = tagFor(s.kind, s.days);
+    var footRight = i.expiry ? "到期日 "+fmtDate(i.expiry).slice(5) : "";
+    return '<div class="item-card" data-item="'+i.id+'"><div class="emoji">'+i.emoji+'</div><div class="info">'
+      + '<div class="row1"><div><div class="name">'+i.name+'</div><div class="qty">'+i.qty+' '+i.unit+' / 最低庫存 '+i.min+' '+i.unit+'</div></div>'
+      + (tag?'<div class="tag-pill" style="background:'+tag.bg+';color:'+tag.fg+'">'+tag.text+'</div>':'') + '</div>'
+      + '<div class="bar-track"><div class="bar-fill" style="width:'+s.pct+'%;background:'+barColor(s.kind)+'"></div></div>'
+      + '<div class="foot"><span>'+s.pct+'%</span><span>'+footRight+'</span></div></div></div>';
+  }
+  function bindItemCards(){ content.querySelectorAll("[data-item]").forEach(function(el){ el.addEventListener("click", function(){ openItemSheet(el.dataset.item); }); }); }
+
+  /* ---------- Appliances / Repairs / Consumables overview ---------- */
+  function renderAppliances(){
+    var html = '<div class="topbar with-line"><h1>家電管理</h1><button class="pill-btn" id="addTopBtn">'+ICONS.plus+' 新增</button></div>';
+    html += '<div class="subtabs" style="padding-top:14px;">' + subtab2("list","家電清單") + subtab2("repairs","維修紀錄") + subtab2("consumables","耗材更換") + '</div>';
+
+    if(applianceTab === "list"){
+      html += '<div class="card-list">';
+      state.appliances.forEach(function(a){
+        var sc = a.status==="待維修" ? {bg:"var(--coral-pale)",fg:"var(--coral)"} : (a.status==="已過保"?{bg:"var(--amber-pale)",fg:"var(--amber)"}:{bg:"var(--sage-pale)",fg:"var(--sage-deep)"});
+        html += '<div class="appliance-card" data-appl="'+a.id+'"><div class="emoji">'+a.emoji+'</div>'
+          + '<div class="info"><div class="name">'+a.name+'</div><div class="model">'+a.model+'</div><div class="date">購入日 '+fmtDate(a.purchaseDate)+'</div></div>'
+          + '<div class="tag-pill" style="background:'+sc.bg+';color:'+sc.fg+'">'+a.status+'</div></div>';
+      });
+      html += '</div>';
+    } else if(applianceTab === "repairs"){
+      html += '<div class="chip-row">' + chip("__all","全部家電", selectedApplianceForRepairs || "__all");
+      state.appliances.forEach(function(a){ html += chip(a.id, a.name, selectedApplianceForRepairs || "__all"); });
+      html += '</div><div class="card-list">';
+      var list = state.repairs.filter(function(r){ return !selectedApplianceForRepairs || selectedApplianceForRepairs==="__all" || r.applianceId===selectedApplianceForRepairs; })
+        .slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+      html += list.length ? list.map(function(r,idx){ return repairRowHtml(r, idx<list.length-1); }).join("") : '<div class="empty">尚無維修紀錄</div>';
+      html += '</div>';
+    } else if(applianceTab === "consumables"){
+      html += '<div class="card-list">';
+      var clist = state.consumables.slice().sort(function(a,b){ return daysUntil(a.nextDate)-daysUntil(b.nextDate); });
+      html += clist.length ? clist.map(consCardHtml).join("") : '<div class="empty">尚無耗材紀錄</div>';
+      html += '</div>';
+    }
+    html += '<div style="height:8px"></div>';
+    content.innerHTML = html;
+
+    document.getElementById("addTopBtn").addEventListener("click", function(){
+      if(applianceTab==="list") openApplianceForm(null);
+      else if(applianceTab==="repairs") openRepairForm(null, selectedApplianceForRepairs && selectedApplianceForRepairs!=="__all" ? selectedApplianceForRepairs : state.appliances[0].id);
+      else openConsumableForm(null, state.appliances[0].id);
+    });
+    content.querySelectorAll("[data-subtab2]").forEach(function(el){ el.addEventListener("click", function(){ applianceTab=el.dataset.subtab2; renderAppliances(); }); });
+    content.querySelectorAll("[data-appl]").forEach(function(el){ el.addEventListener("click", function(){ openApplSheet(el.dataset.appl,"info"); }); });
+    content.querySelectorAll("[data-chip]").forEach(function(el){ el.addEventListener("click", function(){ selectedApplianceForRepairs = el.dataset.chip; renderAppliances(); }); });
+    content.querySelectorAll("[data-repair]").forEach(function(el){ el.addEventListener("click", function(e){ if(e.target.closest("[data-repair-del]")) return; openRepairForm(el.dataset.repair); }); });
+    content.querySelectorAll("[data-repair-del]").forEach(function(el){ el.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(confirm("確定刪除這筆維修紀錄嗎？")){ state.repairs = state.repairs.filter(function(r){return r.id!==el.dataset.repairDel;}); saveState(); renderAppliances(); }
+    }); });
+    content.querySelectorAll("[data-cons]").forEach(function(el){ el.addEventListener("click", function(){ openConsSheet(el.dataset.cons); }); });
+  }
+  function subtab2(val,label){ return '<div class="subtab '+(val===applianceTab?'active':'')+'" data-subtab2="'+val+'">'+label+'</div>'; }
+  function repairRowHtml(r, showLine){
+    var app = findAppliance(r.applianceId);
+    return '<div class="repair-entry '+(r.status==="處理中"?"pending":"")+'" data-repair="'+r.id+'">'
+      + '<div class="rail"><div class="node"></div></div>'
+      + '<div class="body"><div class="date">'+fmtDate(r.date)+(app?" · "+app.name:"")+'</div>'
+      + '<div class="title">'+r.title+(r.status==="處理中"?'  <span class="tag-pill" style="background:var(--coral-pale);color:var(--coral)">處理中</span>':'')+'</div>'
+      + '<div class="meta">'+(r.status==="處理中"?"預估費用 ":"維修費 ")+money(r.amount)+'</div><div class="meta">'+(r.vendor||"—")+'</div></div>'
+      + '<div class="del-x" data-repair-del="'+r.id+'">'+ICONS.trash+'</div></div>';
+  }
+  function consCardHtml(c){
+    var d = daysUntil(c.nextDate); var app = findAppliance(c.applianceId);
+    var tagText,tagBg,tagFg;
+    if(d<=0){tagText="已到期";tagBg="var(--coral-pale)";tagFg="var(--coral)";}
+    else if(d<=7){tagText="剩 "+d+" 天";tagBg="var(--coral-pale)";tagFg="var(--coral)";}
+    else if(d<=30){tagText="剩 "+d+" 天";tagBg="var(--amber-pale)";tagFg="var(--amber)";}
+    else {tagText="正常";tagBg="var(--sage-pale)";tagFg="var(--sage-deep)";}
+    return '<div class="consumable-card" data-cons="'+c.id+'"><div>'
+      + '<div class="name">'+c.name+(app?' · '+app.name:'')+'</div>'
+      + '<div class="meta">建議每 '+c.cycleMonths+' 個月更換</div>'
+      + '<div class="meta2">下次更換 '+fmtDate(c.nextDate)+'</div></div>'
+      + '<div class="tag-pill" style="background:'+tagBg+';color:'+tagFg+'">'+tagText+'</div></div>';
+  }
+
+  /* ---------- Shopping ---------- */
+  function renderShopping(){
+    if(!window.__shopCat) window.__shopCat = "全部";
+    var cats = ["全部"].concat(Array.from(new Set(state.shopping.map(function(s){return s.cat;}))));
+    var filtered = state.shopping.filter(function(s){ return window.__shopCat==="全部" || s.cat===window.__shopCat; });
+    var checkedCount = state.shopping.filter(function(s){return s.checked;}).length;
+
+    var html = '<div class="topbar with-line"><h1>採購清單</h1><button class="pill-btn" id="addShopBtn">'+ICONS.plus+' 新增</button></div>';
+    html += '<div class="chip-row">';
+    cats.forEach(function(c){
+      var count = c==="全部" ? state.shopping.length : state.shopping.filter(function(s){return s.cat===c;}).length;
+      html += '<div class="chip '+(c===window.__shopCat?'active':'')+'" data-shopcat="'+c+'">'+c+' ('+count+')</div>';
+    });
+    html += '</div><div class="card-list" id="shopList">';
+    html += filtered.length ? filtered.map(shopRowHtml).join("") : '<div class="empty">清單目前是空的</div>';
+    html += '</div><div style="height:100px"></div>';
+    html += '<div class="cart-bar"><div class="inner"><button id="cartBtn">加入購物車 ('+checkedCount+')</button></div></div>';
+    content.innerHTML = html;
+
+    document.getElementById("addShopBtn").addEventListener("click", function(){ openShopForm(null); });
+    document.getElementById("cartBtn").addEventListener("click", function(){ showToast("已加入購物車 "+checkedCount+" 項"); });
+    content.querySelectorAll("[data-shopcat]").forEach(function(el){ el.addEventListener("click", function(){ window.__shopCat = el.dataset.shopcat; renderShopping(); }); });
+    content.querySelectorAll("[data-shopcheck]").forEach(function(el){ el.addEventListener("click", function(e){
+      e.stopPropagation();
+      var item = state.shopping.find(function(s){return s.id===el.dataset.shopcheck;});
+      item.checked = !item.checked; saveState(); renderShopping();
+    }); });
+    content.querySelectorAll("[data-shopedit]").forEach(function(el){ el.addEventListener("click", function(e){ e.stopPropagation(); openShopForm(el.dataset.shopedit); }); });
+  }
+  function shopRowHtml(s){
+    return '<div class="shop-row '+(s.checked?'checked':'')+'" data-shop="'+s.id+'">'
+      + '<div class="checkbox '+(s.checked?'checked':'')+'" data-shopcheck="'+s.id+'">'+(s.checked?ICONS.check:'')+'</div>'
+      + '<div class="emoji">'+s.emoji+'</div><div class="info"><div class="name">'+s.name+'</div><div class="cat">'+s.cat+'</div></div>'
+      + '<div class="qty">'+s.qty+'</div><div class="more-x" data-shopedit="'+s.id+'">'+ICONS.edit+'</div></div>';
+  }
+
+  /* ================= Generic form sheet ================= */
+  var formOverlay = document.getElementById("formSheetOverlay");
+  var formSheetEl = document.getElementById("formSheet");
+  function openFormSheet(opts){
+    var html = '<div class="sheet-head"><button class="icon-btn" id="ffClose">'+ICONS.back+'</button><h2>'+opts.title+'</h2><div style="width:38px"></div></div>';
+    opts.fields.forEach(function(f){
+      html += '<div class="form-row"><label>'+f.label+'</label>';
+      if(f.type==="select"){
+        html += '<select data-field="'+f.key+'">' + f.options.map(function(o){ return '<option value="'+o+'" '+(o===f.value?'selected':'')+'>'+o+'</option>'; }).join('') + '</select>';
+      } else if(f.type==="toggle"){
+        html += '<div class="toggle '+(f.value?'on':'')+'" data-field="'+f.key+'"><div class="knob"></div></div>';
+      } else {
+        html += '<input data-field="'+f.key+'" type="'+f.type+'" value="'+(f.value==null?'':String(f.value).replace(/"/g,'&quot;'))+'">';
+      }
+      html += '</div>';
+    });
+    html += '<div class="sheet-actions" style="padding-top:6px;">';
+    if(opts.onDelete) html += '<button id="ffDelete" style="color:var(--coral);">'+(opts.deleteLabel||"刪除")+'</button>';
+    html += '<button id="ffSave" style="background:var(--sage);color:#fff;border:none;">儲存</button></div>';
+    formSheetEl.innerHTML = html;
+    formOverlay.classList.add("open");
+
+    document.getElementById("ffClose").addEventListener("click", closeFormSheet);
+    formOverlay.addEventListener("click", function(e){ if(e.target===formOverlay) closeFormSheet(); }, {once:true});
+    formSheetEl.querySelectorAll(".toggle").forEach(function(t){ t.addEventListener("click", function(){ t.classList.toggle("on"); }); });
+    document.getElementById("ffSave").addEventListener("click", function(){
+      var values = {};
+      opts.fields.forEach(function(f){
+        var el = formSheetEl.querySelector('[data-field="'+f.key+'"]');
+        if(f.type==="toggle") values[f.key] = el.classList.contains("on");
+        else if(f.type==="number") values[f.key] = parseFloat(el.value)||0;
+        else values[f.key] = el.value;
+      });
+      opts.onSave(values);
+      closeFormSheet();
+    });
+    if(opts.onDelete){ document.getElementById("ffDelete").addEventListener("click", function(){
+      if(confirm("確定要刪除嗎？此動作無法復原。")){ opts.onDelete(); closeFormSheet(); }
+    }); }
+  }
+  function closeFormSheet(){ formOverlay.classList.remove("open"); }
+
+  /* ---------- Item add/edit form ---------- */
+  function openItemForm(id, targetTab){
+    var item = id ? findItem(id) : null;
+    openFormSheet({
+      title: item ? "編輯品項" : "新增品項",
+      fields: [
+        {key:"name", label:"品項名稱", type:"text", value:item?item.name:""},
+        {key:"qty", label:"數量", type:"number", value:item?item.qty:1},
+        {key:"unit", label:"單位", type:"text", value:item?item.unit:"個"},
+        {key:"min", label:"最低庫存", type:"number", value:item?item.min:1},
+        {key:"location", label:"存放位置", type:"text", value:item?item.location:(targetTab==="fridge"?"冰箱冷藏室":"儲藏室")},
+        {key:"expiry", label:"有效期限", type:"date", value:item?item.expiry:""},
+        {key:"brand", label:"品牌", type:"text", value:item?item.brand:""},
+        {key:"price", label:"單價", type:"number", value:item?item.price:0},
+        {key:"channel", label:"購買通路", type:"text", value:item?item.channel:""},
+        {key:"note", label:"備註", type:"text", value:item?item.note:""}
+      ],
+      onSave: function(v){
+        if(item){
+          Object.assign(item, v);
+          state.activity.unshift({id:uid("act"), text:"更新品項 "+v.name, date:"08/23"});
+        } else {
+          var arr = targetTab==="fridge" ? state.fridge : state.daily;
+          arr.unshift(Object.assign({id:uid("i"), emoji:"🧺", lastPurchase:"2026-08-23", trend:{labels:["4月","5月","6月","7月","8月"],values:[0,0,0,0,0]}, usageLog:[], purchaseLog:[]}, v));
+          state.activity.unshift({id:uid("act"), text:"新增品項 "+v.name, date:"08/23"});
+        }
+        saveState();
+        if(itemOverlay.classList.contains("open")) renderItemSheet();
+        render();
+        showToast(item ? "已更新「"+v.name+"」" : "已新增「"+v.name+"」");
+      },
+      onDelete: item ? function(){
+        state.fridge = state.fridge.filter(function(i){return i.id!==item.id;});
+        state.daily = state.daily.filter(function(i){return i.id!==item.id;});
+        saveState();
+        itemOverlay.classList.remove("open");
+        render();
+        showToast("已刪除「"+item.name+"」");
+      } : null
+    });
+  }
+
+  /* ---------- Item detail sheet ---------- */
+  var itemOverlay = document.getElementById("itemSheetOverlay");
+  var itemSheetEl = document.getElementById("itemSheet");
+  function openItemSheet(id){ currentItemId = id; itemDetailTab = "info"; renderItemSheet(); itemOverlay.classList.add("open"); }
+  function closeItemSheet(){ itemOverlay.classList.remove("open"); render(); }
+
+  function renderItemSheet(){
+    var item = findItem(currentItemId);
+    if(!item) return;
+    var s = statusOf(item); var tag = tagFor(s.kind, s.days);
+    var html = '<div class="sheet-head"><button class="icon-btn" id="closeItemSheet">'+ICONS.back+'</button><h2>品項詳情</h2>'
+      + '<div class="actions"><button class="icon-btn" id="editItemBtn">'+ICONS.edit+'</button></div></div>';
+    html += '<div class="sheet-hero"><div class="emoji">'+item.emoji+'</div><div style="flex:1">'
+      + '<div style="display:flex;align-items:center;gap:8px;"><div class="name">'+item.name+'</div>'+(tag?'<span class="tag-pill" style="background:'+tag.bg+';color:'+tag.fg+'">'+tag.text+'</span>':'')+'</div>'
+      + '<div class="min">最低庫存 '+item.min+' '+item.unit+'</div>'
+      + '<div class="bar-track"><div class="bar-fill" style="width:'+s.pct+'%;background:'+barColor(s.kind)+'"></div></div></div></div>';
+    html += '<div class="sheet-tabs">' + sheetTabBtn("info","基本資訊") + sheetTabBtn("analysis","消耗分析") + sheetTabBtn("usage","使用記錄") + sheetTabBtn("purchase","購買記錄") + '</div>';
+
+    if(itemDetailTab === "info"){
+      html += '<div class="detail-list">'
+        + detailRow("品牌", item.brand||"—") + detailRow("規格", item.spec||"—") + detailRow("存放位置", item.location||"—")
+        + detailRow("有效期限", item.expiry?fmtDate(item.expiry):"—") + detailRow("上次購買", item.lastPurchase?fmtDate(item.lastPurchase):"—")
+        + detailRow("單價", money(item.price)) + detailRow("購買通路", item.channel||"—") + detailRow("備註", item.note||"—") + '</div>';
+      html += '<div class="stepper"><button id="qtyMinus">−</button><div class="val" id="qtyVal">'+item.qty+'</div><button id="qtyPlus">+</button></div>';
+      html += '<div class="sheet-actions"><button id="delItemBtn" style="color:var(--coral);">刪除品項</button><button id="editItemBtn2">編輯內容</button></div>';
+    } else if(itemDetailTab === "analysis"){
+      var t = item.trend || {labels:[],values:[]};
+      var max = Math.max.apply(null, t.values.concat([1]));
+      html += '<div class="chart-wrap">' + t.values.map(function(v,idx){
+        var h = Math.round((v/max)*84)+6;
+        return '<div class="chart-col"><div class="chart-val">'+v+'</div><div class="chart-bar" style="height:'+h+'px;"></div><div class="chart-label">'+t.labels[idx]+'</div></div>';
+      }).join("") + '</div>';
+      var avgPerDay = (t.values.reduce(function(a,b){return a+b;},0)/(t.values.length||1))/30;
+      var estDays = avgPerDay>0 ? Math.round(item.qty/avgPerDay) : null;
+      html += '<div class="detail-list">'
+        + detailRow("平均消耗量", (avgPerDay*item.unit ? "" : "") + "約 "+(avgPerDay.toFixed(1))+" "+item.unit+" / 天")
+        + detailRow("預估可用天數", estDays!==null ? estDays+" 天" : "—")
+        + detailRow("建議採購量", Math.max(item.min-item.qty,0)+" "+item.unit)
+        + detailRow("建議採購週期", "約每 "+ (avgPerDay>0 ? Math.round(item.min/avgPerDay) : "—") +" 天") + '</div>';
+    } else if(itemDetailTab === "usage"){
+      html += '<div class="detail-list">';
+      html += item.usageLog && item.usageLog.length ? item.usageLog.map(function(l){
+        return '<div class="log-row"><div><div class="l-main">'+(l.note||"使用紀錄")+'</div><div class="l-sub">'+fmtDate(l.date)+'</div></div><div class="l-right" style="color:var(--coral)">'+l.delta+' '+item.unit+'</div></div>';
+      }).join("") : '<div class="empty">尚無使用紀錄</div>';
+      html += '</div><div class="sheet-actions"><button id="addUsageBtn" style="background:var(--white);">+ 新增使用記錄</button></div>';
+    } else if(itemDetailTab === "purchase"){
+      html += '<div class="detail-list">';
+      html += item.purchaseLog && item.purchaseLog.length ? item.purchaseLog.map(function(l){
+        return '<div class="log-row"><div><div class="l-main">'+l.qty+'</div><div class="l-sub">'+fmtDate(l.date)+' · '+(l.channel||"—")+'</div></div><div class="l-right">'+money(l.price)+'</div></div>';
+      }).join("") : '<div class="empty">尚無購買紀錄</div>';
+      html += '</div><div class="sheet-actions"><button id="addPurchaseBtn" style="background:var(--white);">+ 新增購買記錄</button></div>';
+    }
+    html += '<div style="height:8px"></div>';
+    itemSheetEl.innerHTML = html;
+
+    document.getElementById("closeItemSheet").addEventListener("click", closeItemSheet);
+    itemSheetEl.querySelectorAll("[data-sheettab]").forEach(function(el){ el.addEventListener("click", function(){ itemDetailTab = el.dataset.sheettab; renderItemSheet(); }); });
+    var editBtn = document.getElementById("editItemBtn"); if(editBtn) editBtn.addEventListener("click", function(){ openItemForm(item.id); });
+    var editBtn2 = document.getElementById("editItemBtn2"); if(editBtn2) editBtn2.addEventListener("click", function(){ openItemForm(item.id); });
+    var delBtn = document.getElementById("delItemBtn"); if(delBtn) delBtn.addEventListener("click", function(){
+      if(confirm("確定刪除「"+item.name+"」嗎？")){
+        state.fridge = state.fridge.filter(function(i){return i.id!==item.id;});
+        state.daily = state.daily.filter(function(i){return i.id!==item.id;});
+        saveState(); closeItemSheet(); showToast("已刪除「"+item.name+"」");
+      }
+    });
+    var qMinus = document.getElementById("qtyMinus"); if(qMinus) qMinus.addEventListener("click", function(){ changeQty(item,-1); });
+    var qPlus = document.getElementById("qtyPlus"); if(qPlus) qPlus.addEventListener("click", function(){ changeQty(item,1); });
+    var addUsage = document.getElementById("addUsageBtn"); if(addUsage) addUsage.addEventListener("click", function(){ openLogForm(item,"usage"); });
+    var addPurchase = document.getElementById("addPurchaseBtn"); if(addPurchase) addPurchase.addEventListener("click", function(){ openLogForm(item,"purchase"); });
+  }
+  function sheetTabBtn(val,label){ return '<div class="sheet-tab '+(val===itemDetailTab?"active":"")+'" data-sheettab="'+val+'">'+label+'</div>'; }
+  function detailRow(k,v){ return '<div class="detail-row"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>'; }
+  function changeQty(item, delta){
+    item.qty = Math.max(0, item.qty + delta);
+    if(delta<0) item.usageLog.unshift({date:"2026-08-23", delta:delta, note:""});
+    else item.purchaseLog.unshift({date:"2026-08-23", qty:delta+" "+item.unit, price:0, channel:""});
+    saveState();
+    renderItemSheet();
+  }
+  function openLogForm(item, kind){
+    if(kind==="usage"){
+      openFormSheet({ title:"新增使用記錄", fields:[
+        {key:"date", label:"日期", type:"date", value:"2026-08-23"},
+        {key:"delta", label:"使用數量", type:"number", value:1},
+        {key:"note", label:"備註", type:"text", value:""}
+      ], onSave:function(v){
+        item.qty = Math.max(0, item.qty - Math.abs(v.delta));
+        item.usageLog.unshift({date:v.date, delta:-Math.abs(v.delta), note:v.note});
+        saveState(); renderItemSheet(); showToast("已新增使用記錄");
+      }});
+    } else {
+      openFormSheet({ title:"新增購買記錄", fields:[
+        {key:"date", label:"日期", type:"date", value:"2026-08-23"},
+        {key:"qty", label:"數量說明", type:"text", value:"1 "+item.unit},
+        {key:"price", label:"金額", type:"number", value:item.price||0},
+        {key:"channel", label:"購買通路", type:"text", value:item.channel||""}
+      ], onSave:function(v){
+        item.purchaseLog.unshift({date:v.date, qty:v.qty, price:v.price, channel:v.channel});
+        item.lastPurchase = v.date;
+        saveState(); renderItemSheet(); showToast("已新增購買記錄");
+      }});
+    }
+  }
+
+  /* ---------- Appliance add/edit form ---------- */
+  function openApplianceForm(id){
+    var a = id ? findAppliance(id) : null;
+    openFormSheet({
+      title: a ? "編輯家電" : "新增家電",
+      fields: [
+        {key:"name", label:"家電名稱", type:"text", value:a?a.name:""},
+        {key:"model", label:"型號", type:"text", value:a?a.model:""},
+        {key:"status", label:"狀態", type:"select", value:a?a.status:"保固內", options:["保固內","已過保","待維修"]},
+        {key:"purchaseDate", label:"購買日期", type:"date", value:a?a.purchaseDate:""},
+        {key:"price", label:"購買價格", type:"number", value:a?a.price:0},
+        {key:"warrantyUntil", label:"保固期限", type:"date", value:a?a.warrantyUntil:""},
+        {key:"channel", label:"購買通路", type:"text", value:a?a.channel:""},
+        {key:"serial", label:"序號", type:"text", value:a?a.serial:""},
+        {key:"note", label:"備註", type:"text", value:a?a.note:""}
+      ],
+      onSave: function(v){
+        if(a){ Object.assign(a, v); }
+        else { state.appliances.unshift(Object.assign({id:uid("a"), emoji:"🔌"}, v)); }
+        saveState();
+        if(applOverlay.classList.contains("open")) renderApplSheet();
+        render();
+        showToast(a?"已更新「"+v.name+"」":"已新增「"+v.name+"」");
+      },
+      onDelete: a ? function(){
+        state.appliances = state.appliances.filter(function(x){return x.id!==a.id;});
+        state.repairs = state.repairs.filter(function(r){return r.applianceId!==a.id;});
+        state.consumables = state.consumables.filter(function(c){return c.applianceId!==a.id;});
+        saveState(); applOverlay.classList.remove("open"); render();
+        showToast("已刪除「"+a.name+"」");
+      } : null
+    });
+  }
+
+  /* ---------- Appliance detail sheet ---------- */
+  var applOverlay = document.getElementById("applSheetOverlay");
+  var applSheetEl = document.getElementById("applSheet");
+  function openApplSheet(id, tab){ currentApplId = id; applDetailTab = tab||"info"; renderApplSheet(); applOverlay.classList.add("open"); }
+  function closeApplSheet(){ applOverlay.classList.remove("open"); render(); }
+
+  function renderApplSheet(){
+    var a = findAppliance(currentApplId);
+    if(!a) return;
+    var sc = a.status==="待維修" ? {bg:"var(--coral-pale)",fg:"var(--coral)"} : (a.status==="已過保"?{bg:"var(--amber-pale)",fg:"var(--amber)"}:{bg:"var(--sage-pale)",fg:"var(--sage-deep)"});
+    var html = '<div class="sheet-head"><button class="icon-btn" id="closeApplSheet">'+ICONS.back+'</button><h2>家電詳情</h2>'
+      + '<div class="actions"><button class="icon-btn" id="editApplBtn">'+ICONS.edit+'</button></div></div>';
+    html += '<div class="sheet-hero"><div class="emoji">'+a.emoji+'</div><div style="flex:1">'
+      + '<div style="display:flex;align-items:center;gap:8px;"><div class="name">'+a.name+'</div><span class="tag-pill" style="background:'+sc.bg+';color:'+sc.fg+'">'+a.status+'</span></div>'
+      + '<div class="min">'+a.model+'</div></div></div>';
+    html += '<div class="sheet-tabs">' + applTabBtn("info","基本資訊") + applTabBtn("repairs","維修紀錄 ("+repairsFor(a.id).length+")") + applTabBtn("consumables","耗材 ("+consumablesFor(a.id).length+")") + '</div>';
+
+    if(applDetailTab === "info"){
+      html += '<div class="detail-list">' + detailRow("型號",a.model) + detailRow("購買日期",fmtDate(a.purchaseDate)) + detailRow("購買價格",money(a.price))
+        + detailRow("保固期限",fmtDate(a.warrantyUntil)) + detailRow("購買通路",a.channel||"—") + detailRow("序號",a.serial||"—") + detailRow("備註",a.note||"—") + '</div>';
+      html += '<div class="sheet-actions"><button id="delApplBtn" style="color:var(--coral);">刪除家電</button><button id="editApplBtn2">編輯內容</button></div>';
+    } else if(applDetailTab === "repairs"){
+      var rlist = repairsFor(a.id).slice().sort(function(x,y){return y.date.localeCompare(x.date);});
+      html += '<div class="detail-list">';
+      html += rlist.length ? rlist.map(function(r){ return repairRowHtml(r,false); }).join("") : '<div class="empty">尚無維修紀錄</div>';
+      html += '</div><div class="sheet-actions"><button id="addRepairBtn" style="background:var(--white);">+ 新增維修紀錄</button></div>';
+    } else if(applDetailTab === "consumables"){
+      var clist = consumablesFor(a.id);
+      html += '<div class="detail-list">';
+      html += clist.length ? clist.map(function(c){
+        var d = daysUntil(c.nextDate);
+        return '<div class="log-row" data-conslog="'+c.id+'" style="cursor:pointer;"><div><div class="l-main">'+c.name+'</div><div class="l-sub">下次更換 '+fmtDate(c.nextDate)+'</div></div><div class="l-right" style="color:'+(d<=7?"var(--coral)":d<=30?"var(--amber)":"var(--sage-deep)")+'">'+(d<=0?"已到期":"剩 "+d+" 天")+'</div></div>';
+      }).join("") : '<div class="empty">尚無耗材紀錄</div>';
+      html += '</div><div class="sheet-actions"><button id="addConsBtn" style="background:var(--white);">+ 新增耗材</button></div>';
+    }
+    html += '<div style="height:8px"></div>';
+    applSheetEl.innerHTML = html;
+
+    document.getElementById("closeApplSheet").addEventListener("click", closeApplSheet);
+    applSheetEl.querySelectorAll("[data-appltab]").forEach(function(el){ el.addEventListener("click", function(){ applDetailTab = el.dataset.appltab; renderApplSheet(); }); });
+    ["editApplBtn","editApplBtn2"].forEach(function(id){ var b=document.getElementById(id); if(b) b.addEventListener("click", function(){ openApplianceForm(a.id); }); });
+    var delB = document.getElementById("delApplBtn"); if(delB) delB.addEventListener("click", function(){
+      if(confirm("確定刪除「"+a.name+"」嗎？相關維修與耗材紀錄也會一併移除。")){
+        state.appliances = state.appliances.filter(function(x){return x.id!==a.id;});
+        state.repairs = state.repairs.filter(function(r){return r.applianceId!==a.id;});
+        state.consumables = state.consumables.filter(function(c){return c.applianceId!==a.id;});
+        saveState(); closeApplSheet(); showToast("已刪除「"+a.name+"」");
+      }
+    });
+    var addR = document.getElementById("addRepairBtn"); if(addR) addR.addEventListener("click", function(){ openRepairForm(null, a.id); });
+    var addC = document.getElementById("addConsBtn"); if(addC) addC.addEventListener("click", function(){ openConsumableForm(null, a.id); });
+    applSheetEl.querySelectorAll("[data-repair]").forEach(function(el){ el.addEventListener("click", function(e){ if(e.target.closest("[data-repair-del]")) return; openRepairForm(el.dataset.repair); }); });
+    applSheetEl.querySelectorAll("[data-repair-del]").forEach(function(el){ el.addEventListener("click", function(e){
+      e.stopPropagation();
+      if(confirm("確定刪除這筆維修紀錄嗎？")){ state.repairs = state.repairs.filter(function(r){return r.id!==el.dataset.repairDel;}); saveState(); renderApplSheet(); }
+    }); });
+    applSheetEl.querySelectorAll("[data-conslog]").forEach(function(el){ el.addEventListener("click", function(){ openConsSheet(el.dataset.conslog); }); });
+  }
+  function applTabBtn(val,label){ return '<div class="sheet-tab '+(val===applDetailTab?"active":"")+'" data-appltab="'+val+'">'+label+'</div>'; }
+
+  /* ---------- Repair add/edit form ---------- */
+  function openRepairForm(id, defaultApplId){
+    var r = id ? state.repairs.find(function(x){return x.id===id;}) : null;
+    openFormSheet({
+      title: r ? "編輯維修紀錄" : "新增維修紀錄",
+      fields: [
+        {key:"applianceId", label:"家電", type:"select", value: r?r.applianceId:(defaultApplId||state.appliances[0].id), options: state.appliances.map(function(a){return a.id;})},
+        {key:"date", label:"日期", type:"date", value:r?r.date:"2026-08-23"},
+        {key:"title", label:"問題描述", type:"text", value:r?r.title:""},
+        {key:"status", label:"狀態", type:"select", value:r?r.status:"處理中", options:["處理中","完成"]},
+        {key:"amount", label:"費用", type:"number", value:r?r.amount:0},
+        {key:"vendor", label:"維修廠商", type:"text", value:r?r.vendor:""}
+      ],
+      onSave: function(v){
+        if(r) Object.assign(r, v);
+        else state.repairs.unshift(Object.assign({id:uid("r"), note:""}, v));
+        if(v.status==="待維修") {}
+        var app = findAppliance(v.applianceId);
+        if(app) app.status = v.status==="處理中" ? "待維修" : app.status;
+        saveState();
+        if(applOverlay.classList.contains("open")) renderApplSheet();
+        render();
+        showToast(r?"已更新維修紀錄":"已新增維修紀錄");
+      },
+      onDelete: r ? function(){
+        state.repairs = state.repairs.filter(function(x){return x.id!==r.id;});
+        saveState();
+        if(applOverlay.classList.contains("open")) renderApplSheet();
+        render();
+        showToast("已刪除維修紀錄");
+      } : null
+    });
+  }
+  {
+    var select = null; // placeholder to keep select options rendered from array of ids with appliance name
+  }
+
+  /* fix select rendering to show appliance names instead of raw ids */
+  var _origOpenFormSheet = openFormSheet;
+  openFormSheet = function(opts){
+    opts.fields.forEach(function(f){
+      if(f.key === "applianceId"){
+        f._optionLabels = f.options.map(function(id){ var ap = findAppliance(id); return ap ? ap.name : id; });
+      }
+    });
+    _origOpenFormSheet(Object.assign({}, opts, {
+      fields: opts.fields.map(function(f){
+        if(f.key !== "applianceId") return f;
+        return Object.assign({}, f, {
+          optionsRender: true
+        });
+      })
+    }));
+    // Re-render select with proper labels if applianceId field exists
+    var applField = opts.fields.find(function(f){ return f.key === "applianceId"; });
+    if(applField){
+      var sel = formSheetEl.querySelector('[data-field="applianceId"]');
+      if(sel){
+        sel.innerHTML = applField.options.map(function(id){
+          var ap = findAppliance(id);
+          return '<option value="'+id+'" '+(id===applField.value?'selected':'')+'>'+(ap?ap.name:id)+'</option>';
+        }).join('');
+      }
+    }
+  };
+
+  /* ---------- Consumable add/edit form ---------- */
+  function openConsumableForm(id, defaultApplId){
+    var c = id ? findConsumable(id) : null;
+    openFormSheet({
+      title: c ? "編輯耗材" : "新增耗材",
+      fields: [
+        {key:"applianceId", label:"所屬家電", type:"select", value:c?c.applianceId:(defaultApplId||state.appliances[0].id), options: state.appliances.map(function(a){return a.id;})},
+        {key:"name", label:"耗材名稱", type:"text", value:c?c.name:""},
+        {key:"cycleMonths", label:"更換週期（月）", type:"number", value:c?c.cycleMonths:6},
+        {key:"lastReplaced", label:"上次更換日期", type:"date", value:c?c.lastReplaced:"2026-08-23"},
+        {key:"reminderDays", label:"提前提醒天數", type:"number", value:c?c.reminderDays:7},
+        {key:"note", label:"備註", type:"text", value:c?c.note:""}
+      ],
+      onSave: function(v){
+        v.nextDate = addMonths(v.lastReplaced, v.cycleMonths);
+        if(c){ Object.assign(c, v); }
+        else { state.consumables.unshift(Object.assign({id:uid("c"), reminderEnabled:true}, v)); }
+        saveState();
+        if(consOverlay.classList.contains("open")) renderConsSheet();
+        if(applOverlay.classList.contains("open")) renderApplSheet();
+        render();
+        showToast(c?"已更新耗材":"已新增耗材");
+      },
+      onDelete: c ? function(){
+        state.consumables = state.consumables.filter(function(x){return x.id!==c.id;});
+        saveState(); consOverlay.classList.remove("open"); render();
+        showToast("已刪除耗材");
+      } : null
+    });
+  }
+
+  /* ---------- Consumable detail sheet ---------- */
+  var consOverlay = document.getElementById("consSheetOverlay");
+  var consSheetEl = document.getElementById("consSheet");
+  var currentConsId = null;
+  function openConsSheet(id){ currentConsId = id; renderConsSheet(); consOverlay.classList.add("open"); }
+  function closeConsSheet(){ consOverlay.classList.remove("open"); render(); }
+
+  function renderConsSheet(){
+    var c = findConsumable(currentConsId);
+    if(!c) return;
+    var app = findAppliance(c.applianceId);
+    var d = daysUntil(c.nextDate);
+    var used = daysSince(c.lastReplaced);
+    var tagText,tagBg,tagFg;
+    if(d<=0){tagText="已到期";tagBg="var(--coral-pale)";tagFg="var(--coral)";}
+    else if(d<=7){tagText="剩 "+d+" 天到期";tagBg="var(--coral-pale)";tagFg="var(--coral)";}
+    else if(d<=30){tagText="剩 "+d+" 天到期";tagBg="var(--amber-pale)";tagFg="var(--amber)";}
+    else {tagText="狀態正常";tagBg="var(--sage-pale)";tagFg="var(--sage-deep)";}
+
+    var html = '<div class="sheet-head"><button class="icon-btn" id="closeConsSheet">'+ICONS.back+'</button><h2>耗材詳情</h2>'
+      + '<div class="actions"><button class="icon-btn" id="editConsBtn">'+ICONS.edit+'</button></div></div>';
+    html += '<div class="sheet-hero"><div class="emoji">🧴</div><div style="flex:1">'
+      + '<div style="display:flex;align-items:center;gap:8px;"><div class="name">'+c.name+'</div><span class="tag-pill" style="background:'+tagBg+';color:'+tagFg+'">'+tagText+'</span></div>'
+      + '<div class="min">'+(app?app.name:"")+'</div></div></div>';
+    html += '<div class="detail-list">' + detailRow("更換週期","每 "+c.cycleMonths+" 個月") + detailRow("上次更換",fmtDate(c.lastReplaced))
+      + detailRow("下次更換",fmtDate(c.nextDate)) + detailRow("已使用天數", used+" 天") + detailRow("備註", c.note||"—") + '</div>';
+    html += '<div class="detail-list">'
+      + '<div class="toggle-row"><span>到期提醒</span><div class="toggle '+(c.reminderEnabled?"on":"")+'" id="remindToggle"><div class="knob"></div></div></div>'
+      + detailRow("提前提醒天數", c.reminderDays+" 天前") + '</div>';
+    html += '<div class="sheet-actions"><button id="delConsBtn" style="color:var(--coral);">刪除耗材</button><button id="doneConsBtn" style="background:var(--sage);color:#fff;border:none;">更換完成</button></div>';
+    html += '<div style="height:8px"></div>';
+    consSheetEl.innerHTML = html;
+
+    document.getElementById("closeConsSheet").addEventListener("click", closeConsSheet);
+    document.getElementById("editConsBtn").addEventListener("click", function(){ openConsumableForm(c.id, c.applianceId); });
+    document.getElementById("remindToggle").addEventListener("click", function(){ c.reminderEnabled = !c.reminderEnabled; saveState(); renderConsSheet(); });
+    document.getElementById("delConsBtn").addEventListener("click", function(){
+      if(confirm("確定刪除「"+c.name+"」嗎？")){ state.consumables = state.consumables.filter(function(x){return x.id!==c.id;}); saveState(); closeConsSheet(); showToast("已刪除耗材"); }
+    });
+    document.getElementById("doneConsBtn").addEventListener("click", function(){
+      c.lastReplaced = "2026-08-23"; c.nextDate = addMonths(c.lastReplaced, c.cycleMonths);
+      saveState(); renderConsSheet(); showToast("已標記「"+c.name+"」更換完成");
+    });
+  }
+
+  /* ---------- Shopping form ---------- */
+  function openShopForm(id){
+    var s = id ? state.shopping.find(function(x){return x.id===id;}) : null;
+    openFormSheet({
+      title: s?"編輯採購項目":"新增採購項目",
+      fields:[
+        {key:"name", label:"品項名稱", type:"text", value:s?s.name:""},
+        {key:"qty", label:"數量", type:"text", value:s?s.qty:"1個"},
+        {key:"cat", label:"分類", type:"select", value:s?s.cat:"超市", options:["超市","日用品","Costco"]},
+        {key:"emoji", label:"圖示 (輸入一個emoji)", type:"text", value:s?s.emoji:"🛒"}
+      ],
+      onSave:function(v){
+        if(s){ Object.assign(s, v); }
+        else{ state.shopping.unshift(Object.assign({id:uid("s"), checked:false}, v)); }
+        saveState(); render(); showToast(s?"已更新「"+v.name+"」":"已新增「"+v.name+"」");
+      },
+      onDelete: s ? function(){ state.shopping = state.shopping.filter(function(x){return x.id!==s.id;}); saveState(); render(); showToast("已刪除「"+s.name+"」"); } : null
+    });
+  }
+
+  /* ---------- More sheet ---------- */
+  var moreOverlay = document.getElementById("moreSheetOverlay");
+  var moreSheetEl = document.getElementById("moreSheet");
+  function openMoreSheet(){
+    var html = '<div class="sheet-head"><h2>更多功能</h2><button class="icon-btn" id="closeMoreSheet">'+ICONS.back+'</button></div><div class="more-list">';
+    html += moreRow(ICONS.tv,"家電管理","appliances_list") + moreRow(ICONS.wrench,"維修紀錄","repairs") + moreRow(ICONS.clock,"耗材更換提醒","consumables") + moreRow(ICONS.box,"庫存清單","inventory") + moreRow(ICONS.cart,"採購清單","shopping");
+    html += '</div><div style="height:10px"></div>';
+    moreSheetEl.innerHTML = html;
+    moreOverlay.classList.add("open");
+    document.getElementById("closeMoreSheet").addEventListener("click", function(){ moreOverlay.classList.remove("open"); });
+    moreOverlay.addEventListener("click", function(e){ if(e.target===moreOverlay) moreOverlay.classList.remove("open"); }, {once:true});
+    moreSheetEl.querySelectorAll("[data-morenav]").forEach(function(el){
+      el.addEventListener("click", function(){
+        moreOverlay.classList.remove("open");
+        var target = el.dataset.morenav;
+        if(target === "appliances_list"){ applianceTab="list"; nav("appliances"); } else nav(target);
+      });
+    });
+  }
+  function moreRow(icon,label,target){ return '<div class="more-row" data-morenav="'+target+'"><div class="ic">'+icon+'</div><div class="t">'+label+'</div>'+ICONS.chev+'</div>'; }
+
+  function boot(){ document.querySelectorAll('[data-nav="home"]').forEach(function(b){b.classList.add("active");}); render(); }
+  loadState(boot);
+})();
+</script>
+</body>
+</html>
